@@ -1,42 +1,78 @@
-<section class="mt-2">
-  <h2 class="mb-2 text-lg font-semibold">Trade History (Closed Positions)</h2>
+{% extends "base.html" %}
+{% block title %}Financial Portfolio — Jones Data & Software{% endblock %}
 
-  {% if closed_positions and closed_positions|length > 0 %}
-    <div class="rounded-2xl border border-neutral-900 bg-neutral-900/40">
-      <ul class="max-h-[460px] overflow-y-auto divide-y divide-neutral-900">
-        {% for row in closed_positions %}
-          {% set sym = row.get('Symbol', '') %}
-          {% set status = row.get('Position_Status', '') %}
-          {% set size = row.get('Current_Position', '') %}
-          {% set trades = row.get('Total_Trades', '') %}
-          {% set pnl = row.get('Realized_PnL', '') %}
-          <li class="px-4 py-3 hover:bg-neutral-900/50 transition">
-            <div class="flex items-center justify-between gap-4">
-              <!-- Left: Symbol + status badge -->
-              <div class="flex items-center gap-3">
-                <span class="text-base font-semibold text-neutral-100">{{ sym }}</span>
-                {% if status %}
-                  <span class="text-xs rounded-md border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-neutral-300">{{ status }}</span>
-                {% endif %}
-              </div>
-              <!-- Right: metrics -->
-              <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
-                {% if size %}<span class="text-neutral-300">Size: <span class="text-neutral-100">{{ size }}</span></span>{% endif %}
-                {% if trades %}<span class="text-neutral-300">Trades: <span class="text-neutral-100">{{ trades }}</span></span>{% endif %}
-                {% if pnl is not none and pnl != '' %}
-                  <span class="text-neutral-300">P&amp;L:
-                    <span class="{% if (pnl|string).startswith('-') %}text-rose-400{% else %}text-emerald-400{% endif %}">
-                      {{ pnl }}
-                    </span>
-                  </span>
-                {% endif %}
-              </div>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
+{% block content %}
+  <!-- Title + subtitle -->
+  <section class="mb-4">
+    <h1 class="text-2xl font-semibold tracking-tight">Financial Portfolio</h1>
+    <p class="mt-1 text-sm text-neutral-400">Summary of Account Data - Updated Every Saturday</p>
+  </section>
+
+  <!-- Chart card -->
+  <section class="relative mb-3 rounded-2xl border border-neutral-900 bg-neutral-900/60 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+    <div id="chart-wrap"
+         hx-get="/partial/chart?tf={{ timeframe | default('YTD') }}"
+         hx-trigger="load">
+      <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-neutral-400">
+        Loading chart…
+      </div>
     </div>
-  {% else %}
-    <p class="text-neutral-400">No closed positions found yet.</p>
-  {% endif %}
-</section>
+  </section>
+
+  <!-- Timeframe buttons beneath chart -->
+  <div class="mb-8 flex flex-wrap gap-2">
+    {% for t in ["1M","3M","6M","YTD"] %}
+      <button
+        class="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm hover:bg-neutral-800"
+        hx-get="/partial/chart?tf={{ t }}"
+        hx-target="#chart-wrap"
+        hx-swap="innerHTML">
+        {{ t }}
+      </button>
+    {% endfor %}
+  </div>
+
+  <!-- Trade History as a scrollable list -->
+  <section class="mt-2">
+    <h2 class="mb-2 text-lg font-semibold">Trade History (Closed Positions)</h2>
+
+    {% if closed_positions and closed_positions|length > 0 %}
+      <div class="rounded-2xl border border-neutral-900 bg-neutral-900/40">
+        <ul class="max-h-[460px] overflow-y-auto divide-y divide-neutral-900">
+          {% for row in closed_positions %}
+            {% set sym = row.get('Symbol', '') %}
+            {% set status = row.get('Position_Status', '') %}
+            {% set size = row.get('Current_Position', '') %}
+            {% set trades = row.get('Total_Trades', '') %}
+            {% set pnl = row.get('Realized_PnL', '') %}
+            <li class="px-4 py-3 hover:bg-neutral-900/50 transition">
+              <div class="flex items-center justify-between gap-4">
+                <!-- Left: Symbol + status badge -->
+                <div class="flex items-center gap-3">
+                  <span class="text-base font-semibold text-neutral-100">{{ sym }}</span>
+                  {% if status %}
+                    <span class="text-xs rounded-md border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-neutral-300">{{ status }}</span>
+                  {% endif %}
+                </div>
+                <!-- Right: metrics -->
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+                  {% if size %}<span class="text-neutral-300">Size: <span class="text-neutral-100">{{ size }}</span></span>{% endif %}
+                  {% if trades %}<span class="text-neutral-300">Trades: <span class="text-neutral-100">{{ trades }}</span></span>{% endif %}
+                  {% if pnl is not none and pnl != '' %}
+                    <span class="text-neutral-300">P&amp;L:
+                      <span class="{% if (pnl|string).startswith('-') %}text-rose-400{% else %}text-emerald-400{% endif %}">
+                        {{ pnl }}
+                      </span>
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <p class="text-neutral-400">No closed positions found yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}
