@@ -2,55 +2,60 @@
 {% block title %}Financial Portfolio — Jones Data & Software{% endblock %}
 
 {% block content %}
-  <!-- Header -->
   <section class="mb-6">
     <h1 class="text-2xl font-semibold tracking-tight">Financial Portfolio</h1>
-    <p class="mt-1 text-sm text-neutral-400">Summary of Account Data - Updated Every Saturday</p>
+    <p class="mt-1 text-sm text-neutral-400">Summary of Account Data — updated on demand</p>
   </section>
 
-  <!-- Chart container -->
-  <section class="relative rounded-2xl border border-neutral-900 bg-neutral-900/60 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-    <iframe src="/files/pnl_dashboard.html"
-            class="w-full h-[575px] rounded-xl border-0"
-            title="Account P&L Chart"></iframe>
-  </section>
+  <!-- Timeframe buttons -->
+  <div class="mb-3 flex flex-wrap gap-2">
+    {% for t in ["1M","3M","6M","YTD"] %}
+      <button
+        class="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm hover:bg-neutral-800"
+        hx-get="/partial/chart?tf={{ t }}"
+        hx-target="#chart-wrap"
+        hx-swap="innerHTML">
+        {{ t }}
+      </button>
+    {% endfor %}
+  </div>
 
-  <!-- Trade History (scrollable list of closed positions) -->
-  <section class="mt-8">
-    <h2 class="text-xl font-semibold mb-3">Trade History – Realized Gains – By Ticker</h2>
-
-    {% if closed_positions and closed_positions|length > 0 %}
-    <div class="max-h-96 overflow-y-auto rounded-2xl border border-neutral-900 bg-neutral-900/60">
-      <table class="min-w-full text-sm">
-        <thead class="sticky top-0 bg-neutral-900 text-neutral-400">
-          <tr>
-            <th class="px-4 py-2 text-left">Symbol</th>
-            <th class="px-4 py-2 text-right">Total Trades</th>
-            <th class="px-4 py-2 text-right">Realized P&amp;L</th>
-            <th class="px-4 py-2 text-center">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in closed_positions %}
-          {% set pnl = (row.Realized_PnL if row.Realized_PnL is defined else 0) | float %}
-          <tr class="border-t border-neutral-800">
-            <td class="px-4 py-2">{{ row.Symbol }}</td>
-            <td class="px-4 py-2 text-right">{{ row.Total_Trades }}</td>
-            <td class="px-4 py-2 text-right">
-              <span class="{{ 'text-green-400' if pnl>0 else ('text-red-400' if pnl<0 else 'text-neutral-300') }}">
-                {{ "{:+,.2f}".format(pnl) }}
-              </span>
-            </td>
-            <td class="px-4 py-2 text-center">
-              {{ row.Position_Status if row.Position_Status is defined else ("CLOSED" if (row.Current_Position|default(0)) == 0 else "OPEN") }}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <!-- Chart area (loads on page load) -->
+  <div id="chart-wrap"
+       hx-get="/partial/chart?tf={{ timeframe | default('YTD') }}"
+       hx-trigger="load"
+       class="mb-8">
+    <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-neutral-400">
+      Loading chart…
     </div>
+  </div>
+
+  <!-- Closed Positions / Trade History -->
+  <section class="mt-8">
+    <h2 class="mb-3 text-lg font-semibold">Trade History (Closed Positions)</h2>
+    {% if closed_positions and closed_positions|length > 0 %}
+      <div class="overflow-x-auto rounded-xl border border-neutral-800">
+        <table class="min-w-full text-sm">
+          <thead class="bg-neutral-900/70">
+            <tr class="text-left text-neutral-300">
+              {% for col in closed_positions[0].keys() %}
+                <th class="px-3 py-2 font-semibold">{{ col }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-900">
+            {% for row in closed_positions %}
+              <tr class="hover:bg-neutral-900/40">
+                {% for val in row.values() %}
+                  <td class="px-3 py-2 text-neutral-200">{{ val }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
-      <p class="text-neutral-400 text-sm">No trades found yet.</p>
+      <p class="text-neutral-400">No closed positions found yet.</p>
     {% endif %}
   </section>
 {% endblock %}

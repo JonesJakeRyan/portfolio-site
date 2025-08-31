@@ -5,3 +5,4 @@ pandas
 plotly
 gunicorn
 python-dateutil
+markdown    # needed only if you render .md reports
