@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "UDOW-Swing-08-31",
+    "title": "UDOW Swing Analysis - 8/31",
+    "teaser": "Just crossed Resistence with positive sentiment and strong RSI",
+    "tags": ["Swing Trade", "Technicals", "Analysis"],
+    "updated_at": "2025-08-31",
+    "file": "reports/UDOW_Swing_08_31.pdf"
+  },
+  {
+    "slug": "DK-Swing-08-31",
+    "title": "DK Swing Analysis - 08/31",
+    "teaser": "August short term cautious swing trade analysis.",
+    "tags": ["Swing Trade", "Technicals", "Analysis"],
+    "updated_at": "2025-08-31",
+    "file": "reports/DK_Swing_08_31.pdf"
+  },
+  {
+    "slug": "AAPL-Swing-Trade-Analysis",
+    "title": "AAPL Swing Trade Analysis",
+    "teaser": "Slightly bullish lean on AAPL.",
+    "tags": ["Swing Trade", "Technicals", "Analysis"],
+    "updated_at": "2025-08-30",
+    "file": "reports/aapl_swing_trade_analysis.pdf"
+  },
+  {
+    "slug": "msos-Swing-Trade-Report",
+    "title": "MSOS Swing Trade Report",
+    "teaser": "Bullish outlook on MSOS in the near-term",
+    "tags": ["Swing Trade", "Technicals", "Analysis"],
+    "updated_at": "2025-08-30",
+    "file": "reports/MSOS_Swing_Trade_Analysis.pdf"
+  }
+]

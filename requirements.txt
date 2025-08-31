@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+jinja2
+pandas
+plotly
+gunicorn
+python-dateutil
