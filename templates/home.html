@@ -1,61 +1,42 @@
-{% extends "base.html" %}
-{% block title %}Financial Portfolio — Jones Data & Software{% endblock %}
+<section class="mt-2">
+  <h2 class="mb-2 text-lg font-semibold">Trade History (Closed Positions)</h2>
 
-{% block content %}
-  <section class="mb-6">
-    <h1 class="text-2xl font-semibold tracking-tight">Financial Portfolio</h1>
-    <p class="mt-1 text-sm text-neutral-400">Summary of Account Data — updated on demand</p>
-  </section>
-
-  <!-- Timeframe buttons -->
-  <div class="mb-3 flex flex-wrap gap-2">
-    {% for t in ["1M","3M","6M","YTD"] %}
-      <button
-        class="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm hover:bg-neutral-800"
-        hx-get="/partial/chart?tf={{ t }}"
-        hx-target="#chart-wrap"
-        hx-swap="innerHTML">
-        {{ t }}
-      </button>
-    {% endfor %}
-  </div>
-
-  <!-- Chart area (loads on page load) -->
-  <div id="chart-wrap"
-       hx-get="/partial/chart?tf={{ timeframe | default('YTD') }}"
-       hx-trigger="load"
-       class="mb-8">
-    <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-neutral-400">
-      Loading chart…
+  {% if closed_positions and closed_positions|length > 0 %}
+    <div class="rounded-2xl border border-neutral-900 bg-neutral-900/40">
+      <ul class="max-h-[460px] overflow-y-auto divide-y divide-neutral-900">
+        {% for row in closed_positions %}
+          {% set sym = row.get('Symbol', '') %}
+          {% set status = row.get('Position_Status', '') %}
+          {% set size = row.get('Current_Position', '') %}
+          {% set trades = row.get('Total_Trades', '') %}
+          {% set pnl = row.get('Realized_PnL', '') %}
+          <li class="px-4 py-3 hover:bg-neutral-900/50 transition">
+            <div class="flex items-center justify-between gap-4">
+              <!-- Left: Symbol + status badge -->
+              <div class="flex items-center gap-3">
+                <span class="text-base font-semibold text-neutral-100">{{ sym }}</span>
+                {% if status %}
+                  <span class="text-xs rounded-md border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-neutral-300">{{ status }}</span>
+                {% endif %}
+              </div>
+              <!-- Right: metrics -->
+              <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+                {% if size %}<span class="text-neutral-300">Size: <span class="text-neutral-100">{{ size }}</span></span>{% endif %}
+                {% if trades %}<span class="text-neutral-300">Trades: <span class="text-neutral-100">{{ trades }}</span></span>{% endif %}
+                {% if pnl is not none and pnl != '' %}
+                  <span class="text-neutral-300">P&amp;L:
+                    <span class="{% if (pnl|string).startswith('-') %}text-rose-400{% else %}text-emerald-400{% endif %}">
+                      {{ pnl }}
+                    </span>
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
-  </div>
-
-  <!-- Closed Positions / Trade History -->
-  <section class="mt-8">
-    <h2 class="mb-3 text-lg font-semibold">Trade History (Closed Positions)</h2>
-    {% if closed_positions and closed_positions|length > 0 %}
-      <div class="overflow-x-auto rounded-xl border border-neutral-800">
-        <table class="min-w-full text-sm">
-          <thead class="bg-neutral-900/70">
-            <tr class="text-left text-neutral-300">
-              {% for col in closed_positions[0].keys() %}
-                <th class="px-3 py-2 font-semibold">{{ col }}</th>
-              {% endfor %}
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-neutral-900">
-            {% for row in closed_positions %}
-              <tr class="hover:bg-neutral-900/40">
-                {% for val in row.values() %}
-                  <td class="px-3 py-2 text-neutral-200">{{ val }}</td>
-                {% endfor %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p class="text-neutral-400">No closed positions found yet.</p>
-    {% endif %}
-  </section>
-{% endblock %}
+  {% else %}
+    <p class="text-neutral-400">No closed positions found yet.</p>
+  {% endif %}
+</section>

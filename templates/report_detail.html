@@ -6,6 +6,7 @@
 
   {% if content_html %}
     <div class="prose prose-invert max-w-none">{{ content_html | safe }}</div>
+
   {% elif is_csv %}
     <div class="overflow-x-auto rounded-xl border border-neutral-800">
       <table class="min-w-full text-sm">
@@ -23,10 +24,12 @@
         </tbody>
       </table>
     </div>
+
   {% elif embed_src %}
     <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-2">
       <iframe src="{{ embed_src }}" style="width:100%;height:80vh;border:0;border-radius:12px;"></iframe>
     </div>
+
   {% else %}
     <p class="text-neutral-400">No preview available.</p>
   {% endif %}
