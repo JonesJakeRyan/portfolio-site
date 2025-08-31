@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Swing Reports — Portfolio{% endblock %}
+
+{% block content %}
+  <header class="mb-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Swing Reports</h1>
+    <p class="mt-1 text-sm text-neutral-400">Data products and research reports you can open and read in full.</p>
+  </header>
+
+  {% if items and items|length > 0 %}
+    <!-- Cards grid -->
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for it in items %}
+        <a href="/reports/{{ it.slug }}"
+           class="group overflow-hidden rounded-2xl border border-neutral-900 bg-neutral-900/60 hover:bg-neutral-900/80 transition">
+          {% if it.cover_image %}
+            <img src="/files/{{ it.cover_image }}" alt="" class="h-40 w-full object-cover opacity-90 group-hover:opacity-100 transition">
+          {% endif %}
+          <div class="p-4">
+            <h3 class="text-lg font-semibold group-hover:text-neutral-100">{{ it.title }}</h3>
+            {% if it.teaser %}
+              <p class="mt-1 text-sm text-neutral-400 line-clamp-2">{{ it.teaser }}</p>
+            {% endif %}
+
+            {% if it.tags %}
+              <div class="mt-3 flex flex-wrap gap-2">
+                {% for t in it.tags %}
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300">{{ t }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% if it.updated_at %}
+              <p class="mt-3 text-xs text-neutral-500">Updated {{ it.updated_at }}</p>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </section>
+  {% else %}
+    <!-- Empty state -->
+    <div class="rounded-2xl border border-neutral-900 bg-neutral-900/60 p-12 flex items-center justify-center">
+      <p class="text-3xl font-bold text-neutral-400">🚧 Under Development — No reports yet</p>
+    </div>
+  {% endif %}
+{% endblock %}

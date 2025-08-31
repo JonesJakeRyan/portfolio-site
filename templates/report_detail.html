@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} — Portfolio{% endblock %}
+
+{% block content %}
+  <nav class="mb-4 text-sm">
+    <a href="/reports" class="text-neutral-400 hover:text-neutral-200">&larr; Back to Swing Reports</a>
+  </nav>
+
+  <header class="mb-4">
+    <h1 class="text-2xl font-semibold tracking-tight">{{ item.title }}</h1>
+    {% if item.updated_at %}
+      <p class="mt-1 text-sm text-neutral-400">Updated {{ item.updated_at }}</p>
+    {% endif %}
+    {% if item.tags %}
+      <div class="mt-2 flex flex-wrap gap-2">
+        {% for t in item.tags %}
+          <span class="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300">{{ t }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  {% if content_html %}
+    <article class="prose prose-invert max-w-none">
+      {{ content_html | safe }}
+    </article>
+
+  {% elif embed_src %}
+    <div class="rounded-2xl border border-neutral-900 bg-neutral-900/60 p-2">
+      <iframe src="{{ embed_src }}" class="w-full h-[80vh] rounded-xl border-0" title="{{ item.title }}"></iframe>
+    </div>
+
+  {% elif is_csv %}
+    <div class="rounded-2xl border border-neutral-900 bg-neutral-900/60 overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-neutral-900 text-neutral-400">
+          <tr>
+            {% for c in csv_cols %}
+              <th class="px-4 py-2 text-left">{{ c }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in csv_rows %}
+            <tr class="border-t border-neutral-800">
+              {% for c in csv_cols %}
+                <td class="px-4 py-2 whitespace-nowrap">{{ row[c] }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  {% else %}
+    <p class="text-neutral-400">
+      Unable to render this file type.
+      {% if item.file %}
+        <a class="underline" href="/files/{{ item.file }}">Download</a>.
+      {% endif %}
+    </p>
+  {% endif %}
+{% endblock %}
