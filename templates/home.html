@@ -2,13 +2,26 @@
 {% block title %}Financial Portfolio — Jones Data & Software{% endblock %}
 
 {% block content %}
-  <section class="mb-6">
+  <!-- Title + subtitle -->
+  <section class="mb-4">
     <h1 class="text-2xl font-semibold tracking-tight">Financial Portfolio</h1>
-    <p class="mt-1 text-sm text-neutral-400">Summary of Account Data — updated on demand</p>
+    <p class="mt-1 text-sm text-neutral-400">Summary of Account Data - Updated Every Saturday</p>
   </section>
 
-  <!-- Timeframe buttons -->
-  <div class="mb-3 flex flex-wrap gap-2">
+  <!-- Chart card -->
+  <section class="relative mb-3 rounded-2xl border border-neutral-900 bg-neutral-900/60 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+    <!-- On-load chart fetch -->
+    <div id="chart-wrap"
+         hx-get="/partial/chart?tf={{ timeframe | default('YTD') }}"
+         hx-trigger="load">
+      <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-neutral-400">
+        Loading chart…
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeframe buttons (beneath chart) -->
+  <div class="mb-8 flex flex-wrap gap-2">
     {% for t in ["1M","3M","6M","YTD"] %}
       <button
         class="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm hover:bg-neutral-800"
@@ -20,19 +33,9 @@
     {% endfor %}
   </div>
 
-  <!-- Chart area (loads on page load) -->
-  <div id="chart-wrap"
-       hx-get="/partial/chart?tf={{ timeframe | default('YTD') }}"
-       hx-trigger="load"
-       class="mb-8">
-    <div class="rounded-xl border border-neutral-800 bg-neutral-950/60 p-4 text-neutral-400">
-      Loading chart…
-    </div>
-  </div>
-
   <!-- Closed Positions / Trade History -->
-  <section class="mt-8">
-    <h2 class="mb-3 text-lg font-semibold">Trade History (Closed Positions)</h2>
+  <section class="mt-2">
+    <h2 class="mb-2 text-lg font-semibold">Trade History (Closed Positions)</h2>
     {% if closed_positions and closed_positions|length > 0 %}
       <div class="overflow-x-auto rounded-xl border border-neutral-800">
         <table class="min-w-full text-sm">
